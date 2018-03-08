@@ -21,7 +21,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @EnableWebMvc
 @EnableScheduling
 @ComponentScan("com.github.fnpac")
-@Import(DataSourceConfig.class)
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
     @Bean

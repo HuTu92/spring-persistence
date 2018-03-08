@@ -16,11 +16,11 @@ import java.util.Properties;
  * <p>
  * 在Spring中集成hibernate
  */
-//@Configuration
+@Configuration
 public class SpringHibernateConfig {
 
     /**
-     * 如果你使用Hibernate 4的话，那么就应该使用org.springframework.orm.hibernate4中的LocalSessionFactoryBean。
+     * 如果你使用Hibernate 4的话，那么就应该使用org.springframework.orm.hibernate5中的LocalSessionFactoryBean。
      * 尽管它与Hibernate 3包中的LocalSessionFactoryBean使用了相同的名称，
      * 但是Spring 3.1新引入的这个Session工厂类似于Hibernate 3中LocalSessionFactoryBean和AnnotationSessionFactoryBean的结合体。
      *
@@ -40,8 +40,8 @@ public class SpringHibernateConfig {
         // 输出格式化后的sql，更方便查看
         props.setProperty("hibernate.format_sql", "true");
         // 把事务交给Spring管理
-        // hibernate.current_session_context_class常用３种配置：jta，thread，org.springframework.orm.hibernate4.SpringSessionContext
-        props.setProperty("hibernate.current_session_context_class", "thread");
+        // hibernate.current_session_context_class常用３种配置：jta，thread，org.springframework.orm.hibernate5.SpringSessionContext
+        props.setProperty("hibernate.current_session_context_class", "org.springframework.orm.hibernate5.SpringSessionContext");
         sfb.setHibernateProperties(props);
         return sfb;
     }

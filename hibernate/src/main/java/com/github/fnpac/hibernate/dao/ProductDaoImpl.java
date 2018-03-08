@@ -76,20 +76,20 @@ public class ProductDaoImpl implements ProductDao {
     @HibernateTransactional
     public List<Product> loadProductsByCategory(String category) {
         return this.sessionFactory.getCurrentSession()
-                .createQuery("from Product p where p.category = ?", Product.class)
+                .createQuery("from Product p where p.category = :category", Product.class)
                 .setParameter("category", category).list();
     }
 
     @Override
     @HibernateTransactional
     public List<Product> loadProductsByCategoryByHibernateTemplate(String category) {
-        return (List<Product>) hibernateTemplate.findByNamedQuery("from Product p where p.category = ?", category);
+        return (List<Product>) hibernateTemplate.find("from Product p where p.category = ?", category);
     }
 
     @Override
-//    @Transactional
+    @Transactional
     public List<Product> loadProductsByCategoryByJdbcTemplate(String category) {
-        return jdbcTemplate.query("select * from t_products p where p.category = ?", (resultSet, i) -> {
+        return jdbcTemplate.query("select * from t_products p where p.p_category = ?", (resultSet, i) -> {
             Product product = new Product();
             product.setId(resultSet.getLong("id"));
             product.setName(resultSet.getString("p_name"));
@@ -97,5 +97,17 @@ public class ProductDaoImpl implements ProductDao {
             product.setCategory(resultSet.getString("p_category"));
             return product;
         }, category);
+    }
+
+    @Override
+    @HibernateTransactional
+    public void updateProductsByCategory(String category) {
+        List<Product> products = this.loadProductsByCategory(category);
+        for (Product product : products) {
+            product.setName("Spring Boot 实战");
+            this.sessionFactory.getCurrentSession()
+                    .update(product);
+        }
+        throw new RuntimeException("rollback");
     }
 }

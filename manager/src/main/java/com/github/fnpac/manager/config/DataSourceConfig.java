@@ -1,6 +1,7 @@
 package com.github.fnpac.manager.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -89,7 +90,7 @@ public class DataSourceConfig implements EnvironmentAware {
     String filters;
 
     //===============================================
-    // 阿里数据库连接池
+    // 阿里数据库连接池druid
     //===============================================
     @Bean(destroyMethod = "close")
     public DataSource dataSource() {
@@ -138,6 +139,20 @@ public class DataSourceConfig implements EnvironmentAware {
     public JdbcTemplate jdbcTemplate() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate();
         jdbcTemplate.setDataSource(dataSource());
+//        jdbcTemplate.setDataSource(dbcpDataSource());
         return jdbcTemplate;
     }
+
+    //===============================================
+    // dbcp
+    //===============================================
+//    @Bean
+//    public BasicDataSource dbcpDataSource() {
+//        BasicDataSource dataSource = new BasicDataSource();
+//        dataSource.setDriverClassName(driver);
+//        dataSource.setUrl(url);
+//        dataSource.setUsername(username);
+//        dataSource.setPassword(password);
+//        return dataSource;
+//    }
 }

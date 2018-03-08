@@ -14,4 +14,6 @@ public interface ProductDao {
     List<Product> loadProductsByCategoryByHibernateTemplate(String category);
 
     List<Product> loadProductsByCategoryByJdbcTemplate(String category);
+
+    void updateProductsByCategory(String category);
 }
