@@ -1,11 +1,18 @@
 package com.github.fnpac.hibernate.dao;
 
+import com.github.fnpac.hibernate.annotation.HibernateTransactional;
 import com.github.fnpac.hibernate.domain.Product;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,22 +50,52 @@ public class ProductDaoImpl implements ProductDao {
      * <p>
      * - 把事务交给Spring管理 - {@code <property name="hibernate.current_session_context_class">org.springframework.orm.hibernate5.SpringSessionContext</property>}
      */
+    // 使用SessionFactory，而不是使用HibernateTemplate，是为了实现repository与Spring解耦
     private final SessionFactory sessionFactory;
 
+    private final HibernateTemplate hibernateTemplate;
+
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    public ProductDaoImpl(SessionFactory sessionFactory) {
+    public ProductDaoImpl(SessionFactory sessionFactory, HibernateTemplate hibernateTemplate, JdbcTemplate jdbcTemplate) {
         this.sessionFactory = sessionFactory;
+        this.hibernateTemplate = hibernateTemplate;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
+     * （1）getCurrentSession是从当前上下文中获取Session并且会绑定到当前线程，第一次调用时会创建一个Session实例，如果该Session未关闭，后续多次获取的是同一个Session实例；事务提交或者回滚时会自动关闭Sesison,无需人工关闭。
+     * <p>
+     * （2）openSession每次打开都是新的Session,所以多次获取的Session实例是不同的，并且需要人为的调用close方法进行Session关闭。
+     *
      * @param category
      * @return
      */
     @Override
-    @Transactional
+    @HibernateTransactional
     public List<Product> loadProductsByCategory(String category) {
         return this.sessionFactory.getCurrentSession()
                 .createQuery("from Product p where p.category = ?", Product.class)
                 .setParameter("category", category).list();
+    }
+
+    @Override
+    @HibernateTransactional
+    public List<Product> loadProductsByCategoryByHibernateTemplate(String category) {
+        return (List<Product>) hibernateTemplate.findByNamedQuery("from Product p where p.category = ?", category);
+    }
+
+    @Override
+//    @Transactional
+    public List<Product> loadProductsByCategoryByJdbcTemplate(String category) {
+        return jdbcTemplate.query("select * from t_products p where p.category = ?", (resultSet, i) -> {
+            Product product = new Product();
+            product.setId(resultSet.getLong("id"));
+            product.setName(resultSet.getString("p_name"));
+            product.setPrice(resultSet.getBigDecimal("p_price"));
+            product.setCategory(resultSet.getString("p_category"));
+            return product;
+        }, category);
     }
 }

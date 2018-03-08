@@ -10,4 +10,8 @@ import java.util.List;
 public interface ProductDao {
 
     List<Product> loadProductsByCategory(String category);
+
+    List<Product> loadProductsByCategoryByHibernateTemplate(String category);
+
+    List<Product> loadProductsByCategoryByJdbcTemplate(String category);
 }

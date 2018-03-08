@@ -1,8 +1,12 @@
 package com.github.fnpac.hibernate.config;
 
+import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -12,7 +16,7 @@ import java.util.Properties;
  * <p>
  * 在Spring中集成hibernate
  */
-@Configuration
+//@Configuration
 public class SpringHibernateConfig {
 
     /**
@@ -24,7 +28,7 @@ public class SpringHibernateConfig {
      * @return
      */
     @Bean
-    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
+    public LocalSessionFactoryBean hibernateSessionFactory(DataSource dataSource) {
         LocalSessionFactoryBean sfb = new LocalSessionFactoryBean();
         sfb.setDataSource(dataSource);
         sfb.setPackagesToScan(new String[]{"com.github.fnpac.hibernate.domain"});
@@ -36,8 +40,23 @@ public class SpringHibernateConfig {
         // 输出格式化后的sql，更方便查看
         props.setProperty("hibernate.format_sql", "true");
         // 把事务交给Spring管理
-        props.setProperty("hibernate.current_session_context_class", "org.springframework.orm.hibernate5.SpringSessionContext");
+        // hibernate.current_session_context_class常用３种配置：jta，thread，org.springframework.orm.hibernate4.SpringSessionContext
+        props.setProperty("hibernate.current_session_context_class", "thread");
         sfb.setHibernateProperties(props);
         return sfb;
+    }
+
+    @Bean
+    public PlatformTransactionManager hibernateTransactionManager(SessionFactory sessionFactory) {
+        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+        transactionManager.setSessionFactory(sessionFactory);
+        return transactionManager;
+    }
+
+    @Bean
+    public HibernateTemplate hibernateTemplate(SessionFactory sessionFactory) {
+        HibernateTemplate template = new HibernateTemplate();
+        template.setSessionFactory(sessionFactory);
+        return template;
     }
 }
