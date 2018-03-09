@@ -86,23 +86,33 @@ public class JpaRepositoryTest {
     }
 
     /*
-        [
-            {
-                "category":"计算机图书",
-                "id":1,
-                "name":"Java编程思想",
-                "price":111
-            },
-            {
-                "category":"计算机图书",
-                "id":2,
-                "name":"Spring 实战",
-                "price":512
-            }
-        ]
+        {
+            "content":[
+                {
+                    "category":"计算机图书",
+                    "id":1,
+                    "name":"Java编程思想",
+                    "price":111
+                },
+                {
+                    "category":"计算机图书",
+                    "id":2,
+                    "name":"Spring 实战",
+                    "price":512
+                }
+            ],
+            "first":true,
+            "last":false,
+            "number":0,
+            "numberOfElements":2,
+            "size":2,
+            "totalElements":4,
+            "totalPages":2
+        }
      */
     @Test
     public void findByCategoryAndPageable() {
+        // return the first page.
         Page<Product> products = productRepository.findByCategory("计算机图书", new PageRequest(0, 2));
         logger.info(JSON.toJSONString(products));
     }
