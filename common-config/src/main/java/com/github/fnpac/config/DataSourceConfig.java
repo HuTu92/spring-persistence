@@ -153,16 +153,4 @@ public class DataSourceConfig implements EnvironmentAware {
 //        dataSource.setPassword(password);
 //        return dataSource;
 //    }
-
-    /**
-     * PersistenceExceptionTranslationPostProcessor是一个bean 后置处理器（bean post-processor），
-     * 它会在所有拥有@Repository注解的类上添加一个通知器（advisor），
-     * 这样就会捕获任何平台相关的异常并以Spring非检查型数据访问异常的形式重新抛出。
-     *
-     * @return
-     */
-//    @Bean
-    public BeanPostProcessor persistenceTranslation() {
-        return new PersistenceExceptionTranslationPostProcessor();
-    }
 }
