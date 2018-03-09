@@ -80,15 +80,36 @@ public class ProductDaoImpl implements ProductDao {
                 .setParameter("category", category).list();
     }
 
+    /**
+     * 使用HibernateTemplate基于参数索引方式查询
+     *
+     * @param category
+     * @return
+     */
     @Override
     @HibernateTransactional
-    public List<Product> loadProductsByCategoryByHibernateTemplate(String category) {
-        return (List<Product>) hibernateTemplate.find("from Product p where p.category = ?", category);
+    public List<Product> loadProductsByCategoryUsingHibernateTemplate(String category) {
+        // HSQL
+        //      If use '?0', will success
+        //      If use '?1', will issues 'java.lang.IllegalArgumentException: Unknown parameter position: 0'
+        //      HSQL 索引从0开始
+        // JPQL ?1，索引从1开始
+        return (List<Product>) hibernateTemplate.find("from Product p where p.category = ?0", category);
     }
 
+    /**
+     * 使用JdbcTemplate基于参数索引方式查询
+     *
+     * @param category
+     * @return
+     */
     @Override
     @Transactional
-    public List<Product> loadProductsByCategoryByJdbcTemplate(String category) {
+    public List<Product> loadProductsByCategoryUsingJdbcTemplate(String category) {
+        // MYSQL
+        //      If use '?0/?1', will issues 'java.sql.SQLException: sql injection violation, syntax error: syntax error, error in :'y = ?1''
+        //      MYSQL不支持数字索引
+        // JPQL ?1，索引从1开始
         return jdbcTemplate.query("select * from t_products p where p.p_category = ?", (resultSet, i) -> {
             Product product = new Product();
             product.setId(resultSet.getLong("id"));

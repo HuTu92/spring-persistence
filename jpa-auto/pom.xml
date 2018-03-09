@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>war</packaging>
 
-    <artifactId>hibernate</artifactId>
+    <artifactId>jpa-auto</artifactId>
 
     <dependencies>
         <dependency>
