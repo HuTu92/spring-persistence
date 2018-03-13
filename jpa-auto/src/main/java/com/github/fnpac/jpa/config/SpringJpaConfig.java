@@ -1,6 +1,5 @@
 package com.github.fnpac.jpa.config;
 
-import com.github.fnpac.jpa.config.repository.CustomJpaRepositoryFactoryBean;
 import com.github.fnpac.jpa.config.repository.CustomJpaRepositoryImpl;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -88,6 +87,16 @@ public class SpringJpaConfig extends WebMvcConfigurerAdapter implements Environm
         return new HibernateJpaDialect();
     }
 
+    /**
+     * 在web项目中我们经常会遇到在控制器或者页面访问数据时，会遇到会话连接已关闭的错误，这个时候我们会配置OpenEntityManagerInViewInterceptor这个过滤器
+     * <p>
+     * API：Spring Web请求拦截器，用于将JPA EntityManager绑定到线程以执行整个请求处理。
+     * 适用于"Open EntityManager in View"模式，即尽管已完成原始事务，但仍允许在Web视图中进行延迟加载。
+     * 该拦截器使JPA EntityManagers可以通过当前线程获取使用，并由事务管理器自动检测。
+     * 它适用于通过org.springframework.orm.jpa.JpaTransactionManager或org.springframework.transaction.jta.JtaTransactionManager以及非事务性只读execution的服务层事务。
+     * <p>
+     * 与OpenEntityManagerInViewFilter相反，这个拦截器是在Spring应用程序上下文中设置的，因此可以利用bean注入。
+     */
     @Bean
     public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
         return new OpenEntityManagerInViewInterceptor();
