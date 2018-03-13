@@ -43,12 +43,6 @@ public class JpaRepositoryTest {
         logger.info(JSON.toJSONString(product));
     }
 
-    @Test
-    public void findByCategory() {
-        List<Product> products = productRepository.findByCategory("计算机图书");
-        logger.info(JSON.toJSONString(products));
-    }
-
     /*
 
         [
@@ -123,4 +117,15 @@ public class JpaRepositoryTest {
         logger.info(JSON.toJSONString(products));
     }
 
+    @Test
+    public void findByCustom() {
+        List<Product> products = productRepository.findAll(ProductSpec.findByCategory("计算机图书"));
+        logger.info(JSON.toJSONString(products));
+    }
+
+    @Test
+    public void findByCategory() {
+        Product product = productRepository.doSomething(Product.class, 2L);
+        logger.info(JSON.toJSONString(product));
+    }
 }

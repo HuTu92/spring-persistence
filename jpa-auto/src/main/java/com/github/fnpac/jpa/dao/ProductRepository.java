@@ -1,10 +1,10 @@
 package com.github.fnpac.jpa.dao;
 
+import com.github.fnpac.jpa.config.repository.CustomJpaRepository;
 import com.github.fnpac.jpa.domain.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +17,7 @@ import java.util.List;
  * 2. 排序和分页
  */
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
+public interface ProductRepository extends CustomJpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     Product findById(Long id);
 

@@ -1,5 +1,7 @@
 package com.github.fnpac.jpa.config;
 
+import com.github.fnpac.jpa.config.repository.CustomJpaRepositoryFactoryBean;
+import com.github.fnpac.jpa.config.repository.CustomJpaRepositoryImpl;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,10 +10,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.sql.DataSource;
 
@@ -25,9 +30,11 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(
         basePackages = "com.github.fnpac.jpa.dao",
         entityManagerFactoryRef = "jpaLocalContainerEntityManagerFactory",
-        transactionManagerRef = "jpaTransactionManager"
+        transactionManagerRef = "jpaTransactionManager",
+//        repositoryFactoryBeanClass = CustomJpaRepositoryFactoryBean.class // Using v1
+        repositoryBaseClass = CustomJpaRepositoryImpl.class // Using v2
 )
-public class SpringJpaConfig implements EnvironmentAware {
+public class SpringJpaConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
 
     private Environment environment;
 
@@ -79,5 +86,15 @@ public class SpringJpaConfig implements EnvironmentAware {
      */
     private JpaDialect hibernateJpaDialect() {
         return new HibernateJpaDialect();
+    }
+
+    @Bean
+    public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+        return new OpenEntityManagerInViewInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addWebRequestInterceptor(openEntityManagerInViewInterceptor());
     }
 }
