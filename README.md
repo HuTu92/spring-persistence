@@ -7,3 +7,4 @@
 - - Spring Data JPA
       - Specification自定义查询准则
       - 排序和分页
+      - 自定义RepositoryFactory实现
